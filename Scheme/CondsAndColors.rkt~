@@ -2,48 +2,14 @@
 (require gigls/unsafe)
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;                                                 ;
-;    USEFUL PROCEDURES CHECKING TYPES             ;
-;                                                 ; 
-;                                                 ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;; Procedure:
-;;;   iscolor?
-;;; Parameters:
-;;;   input, a value of any type
-;;; Purpose:
-;;;   Checks if input represents a color recognised by MediaScript or an RGB
-;;; Produces:
-;;;   A boolean value
-;;; Preconditions:
-;;;   input must be a type accepted by racket
-;;; Postconditions:
-;;;   returns #t if input is either an RGB volor or a color a color recognised 
-;;;              by MediaScript
-;;;   returns #f if otherwise
-
-
+;Problem 1: Types
 
 (define is-color?
-  (lambda (input)
-    (or (irgb? input) (color-name? input) )))
+  (lambda (value)
+    (or (irgb? value) (color-name? value) )))
   
 
-;;; Procedure:
-;;;   color-to-irgb
-;;; Parameters:
-;;;   some-color
-;;; Purpose:
-;;;   Converts < some-color > to corresponding integer encoded RGB color
-;;; Produces:
-;;;   irgb, a string representing the integer encoded RGB color
-;;; Preconditions:
-;;;   < some-color> must be an RGB color or a colorname accepted by MediaScript
-;;; Postconditions:
-;;;   returns irgb, 
-;;;   returns #f if otherwise < some-color> does not satisfy pre conditions
+;b) 
 
 (define color-to-irgb
   (lambda (some-color)
@@ -52,52 +18,16 @@
           (else #f))))
   
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;                                                 ;
-;    USEFUL PROCEDURES FOR HUE TRANSFORMS         ;
-;                                                 ; 
-;                                                 ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Problem 2: Hue Transforms
 
-
-;;; Procedure:
-;;;   chroma
-;;; Parameters:
-;;;   red, an integer
-;;;   blue, an integer
-;;;   green, an integer
-;;; Purpose:
-;;;   Calculates the Chroma given the red, blue, green components of a color
-;;; Produces:
-;;;   chroma, an integer representing the chroma 
-;;; Preconditions:
-;;;   red, blue , green represents the red, blue and green components of some color
-;;; Postconditions:
-;;;   returns chroma, the chroma 
-
-
+;chroma
 (define chroma
   (lambda(red green blue)
     (-(max red green blue)
       (min red green blue)
       )))
 
-
-;;; Procedure:
-;;;   reddish-hue
-;;; Parameters:
-;;;   color, an integer-encoded IRGB color
-;;; Purpose:
-;;;   Calculates the reddish raw hue of < color >
-;;; Produces:
-;;;   red-hue an number representing the reddish-hue of < color> 
-;;; Preconditions:
-;;;   none
-;;; Postconditions:
-;;;   returns red-hue
-
-
-
+;reddish-hue
 (define reddish-hue
   (lambda (color)
    (let* ([red-component 
@@ -107,20 +37,7 @@
          [Chroma (chroma(red-component green-component blue-component))])
       (/(- green-component blue-component) Chroma))))
      
-
-
-;;; Procedure:
-;;;   greenish-hue
-;;; Parameters:
-;;;   color, an integer-encoded IRGB color
-;;; Purpose:
-;;;   Calculates the greenish raw hue of < color >
-;;; Produces:
-;;;   green-hue an number representing the greenish-hue of < color> 
-;;; Preconditions:
-;;;   none
-;;; Postconditions:
-;;;   returns green-hue
+;greenish-hue
 
 (define greenish-hue
   (lambda (color)
@@ -130,20 +47,7 @@
          [Chroma (chroma red-component green-component blue-component)])
      (+ (/(- blue-component red-component) Chroma) 2))))
   
-   
-;;; Procedure:
-;;;   bluish-hue
-;;; Parameters:
-;;;   color, an integer-encoded IRGB color
-;;; Purpose:
-;;;   Calculates the bluish raw hue of < color >
-;;; Produces:
-;;;   blue-hue an number representing the bluishue of < color> 
-;;; Preconditions:
-;;;   none
-;;; Postconditions:
-;;;   returns blue-hue
-
+;bluish-hue     
 (define blueish-hue
   (lambda (color)
    (let* ([red-component (irgb-red color)]
@@ -152,7 +56,7 @@
          [Chroma (chroma red-component green-component blue-component)])
      (+ (/(- red-component green-component) Chroma) 4))))
             
-
+;c)
 
 (define irgb->hue-angle 
   (lambda (irgb)
@@ -173,21 +77,15 @@
 
      
     
+;Problem 3: Changing Colors
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;                                                 ;
-;     PROCEDURES FOR CHANGING COLORS              ;
-;                                                 ; 
-;                                                 ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
+;a
 
 (define irgb-change-hue
   (lambda (irgb-color hue)
      (hsv->irgb (cons (/ hue 60) (cdr (irgb->hsv irgb-color))))))
 
-
+;b) 
 
 (define irgb-true-complement 
   (lambda (irgb-color)
@@ -195,9 +93,9 @@
            [withoutHue cdr color-HSV])
       (hsv->irgb(cons (modulo (* 180 (car color-HSV)) 360 ) withoutHue)))))
 
+;Problem 4: Hue-Based Transforms
 
-
-
+;a
 
 (define irgb-rotate-hue 
   (lambda (irgb-color angle)
